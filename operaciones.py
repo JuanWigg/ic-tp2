@@ -1,4 +1,6 @@
 import random
+from random import random as random_extra
+from typing import List
 from individuo import Individuo
 
 def generar_poblacion(cantidad):
@@ -47,4 +49,37 @@ def mutacion(individuo):
     individuo_mutado.setContendores(contenedores_mutados)
     return individuo_mutado
 
+def get_2_individuos(individuos):
+    ind1 = random.choice(individuos)
 
+    ind2 = random.choice(individuos)
+
+    while(ind2==ind1):
+        ind2 = random.choice(individuos)
+
+    return ind1,ind2
+
+def mutar_segun_probabilidad(individuo: Individuo, probabilidad: float):
+    return mutacion(individuo) if probabilidad<random_extra() else individuo
+
+def avanzar_generacion(individuos: List):
+    seleccionados = seleccionPorVentana(individuos)
+    
+    padre1,padre2 = get_2_individuos(seleccionados)
+
+    hijo1,hijo2 = cruza(padre1,padre2)
+
+    hijo1 = mutar_segun_probabilidad(hijo1,0.025)
+    hijo2 = mutar_segun_probabilidad(hijo2,0.025)
+
+    areemplazar1,areemplazar2 = get_2_individuos(individuos)
+
+    individuos.remove(areemplazar1)
+    individuos.remove(areemplazar2)
+
+    individuos.append(hijo1)
+    individuos.append(hijo2)
+
+def get_fittest(poblacion: List):
+    poblacion.sort(key=lambda x: x.fitness(), reverse=True)
+    return poblacion[0]
