@@ -2,6 +2,7 @@ import random
 from random import random as random_extra
 from typing import List
 from individuo import Individuo
+cant_mutaciones = 0
 
 def generar_poblacion(cantidad):
     individuos = []
@@ -23,7 +24,7 @@ def seleccionPorVentana(individuos):
 
 def cruza(padre1, padre2):
     punto_corte = random.randint(1, len(padre1.contenedores)-1)
-    print("Punto de corte: ", punto_corte)
+    #print("Punto de corte: ", punto_corte)
     primera_parte_padre1, segunda_parte_padre1 = padre1.dividirContenedores(punto_corte)
     primera_parte_padre2, segunda_parte_padre2 = padre2.dividirContenedores(punto_corte)
     hijo1 = Individuo()
@@ -36,6 +37,9 @@ def mutar_contenedor(valor):
     return 0 if valor==1 else 1
 
 def mutacion(individuo):
+    global cant_mutaciones
+    print("Mutacion #", cant_mutaciones)
+    cant_mutaciones += 1
     mutador = Individuo()
     mutador.setRandomContenedores()
     print("Cromosoma de mutacion: ", mutador.contenedores)
@@ -60,7 +64,7 @@ def get_2_individuos(individuos):
     return ind1,ind2
 
 def mutar_segun_probabilidad(individuo: Individuo, probabilidad: float):
-    return mutacion(individuo) if probabilidad<random_extra() else individuo
+    return mutacion(individuo) if probabilidad>random_extra() else individuo
 
 def avanzar_generacion(individuos: List):
     seleccionados = seleccionPorVentana(individuos)
