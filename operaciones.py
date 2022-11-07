@@ -66,7 +66,7 @@ def get_2_individuos(individuos):
 def mutar_segun_probabilidad(individuo: Individuo, probabilidad: float):
     return mutacion(individuo) if probabilidad>random_extra() else individuo
 
-def avanzar_generacion(individuos: List):
+def avanzar_generacion_random(individuos: List):
     seleccionados = seleccionPorVentana(individuos)
     
     padre1,padre2 = get_2_individuos(seleccionados)
@@ -83,6 +83,33 @@ def avanzar_generacion(individuos: List):
 
     individuos.append(hijo1)
     individuos.append(hijo2)
+
+def avanzar_generacion_generacional(individuos: List, probabilidad_mutacion: float):
+        seleccionados = seleccionPorRuleta(individuos).copy()
+        nueva_gen = []
+
+        while len(seleccionados)>1:
+            padre1,padre2 = get_2_individuos(seleccionados)
+
+            hijo1,hijo2 = cruza(padre1,padre2)
+
+            hijo1 = mutar_segun_probabilidad(hijo1, probabilidad_mutacion)
+            hijo2 = mutar_segun_probabilidad(hijo2, probabilidad_mutacion)
+            
+            seleccionados.remove(padre1)
+            seleccionados.remove(padre2)
+            
+            nueva_gen.append(hijo1)
+            nueva_gen.append(hijo2)
+
+        if len(seleccionados)==1:
+            print("Quedo un individuo sin pareja: ", seleccionados[0])
+            print("Pasa a la siguiente generacion")
+            nueva_gen.append(seleccionados[0])
+            seleccionados.remove(seleccionados[0])
+
+        return nueva_gen
+
 
 def get_fittest(poblacion: List):
     poblacion.sort(key=lambda x: x.fitness(), reverse=True)
