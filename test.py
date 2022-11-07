@@ -1,11 +1,11 @@
 import operaciones as op
 
-poblacion = op.generar_poblacion(5)
+poblacion = op.generar_poblacion(4)
 print("Poblacion inicial: ")
 for individuo in poblacion:
     print(individuo)
 
-op.seleccionPorRuleta(poblacion)
+print(op.avanzar_generacion_generacional(poblacion, probabilidad_mutacion=0.025, funcion_seleccion=op.seleccionPorRuleta))
 
 #
 #op.avanzar_generacion(poblacion)

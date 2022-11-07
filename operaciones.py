@@ -109,9 +109,9 @@ def avanzar_generacion_random(individuos: List):
     individuos.append(hijo1)
     individuos.append(hijo2)
 
-def avanzar_generacion_generacional(individuos: List, probabilidad_mutacion: float):
-        seleccionados = seleccionPorRuleta(individuos).copy()
+def avanzar_generacion_generacional(individuos: List, probabilidad_mutacion: float, funcion_seleccion: any):
         nueva_gen = []
+        seleccionados = funcion_seleccion(individuos).copy()
 
         while len(seleccionados)>1:
             padre1,padre2 = get_2_individuos(seleccionados)
