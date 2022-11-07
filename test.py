@@ -5,7 +5,7 @@ print("Poblacion inicial: ")
 for individuo in poblacion:
     print(individuo)
 
-op.seleccionPorRuleta(poblacion)
+op.seleccion_por_torneo(poblacion)
 
 #
 #op.avanzar_generacion(poblacion)
