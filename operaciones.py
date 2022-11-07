@@ -15,29 +15,6 @@ def generar_individuo():
     individuo.setRandomContenedores()
     return individuo
 
-def seleccionPorRuleta(individuos):
-    fitness_total = float(sum(map(lambda x: x.fitness(), individuos)))
-    individuos_probabilidad_individual = list(map(lambda x: x.fitness()/fitness_total,individuos))
-    acumulado = 0
-    individuos_probabilidad_acumulada = []
-
-    for i in range(len(individuos_probabilidad_individual)):
-        individuos_probabilidad_acumulada.append(calcular_acumulado(individuos_probabilidad_individual[i], acumulado))
-        acumulado = individuos_probabilidad_acumulada[i]
-    
-    individuos_seleccionados = []
-    for _ in range(len(individuos)):
-        numero_seleccionado = random_extra()
-        posicion_actual = 0
-        while individuos_probabilidad_acumulada[posicion_actual] < numero_seleccionado:
-            posicion_actual += 1
-        individuos_seleccionados.append(individuos[posicion_actual]) 
-    return individuos_seleccionados
-
-def calcular_acumulado(probabilidad_individuo, acumulado_hasta_momento):
-    nuevo_acumulado = probabilidad_individuo + acumulado_hasta_momento
-    return nuevo_acumulado
-
 def seleccion_por_ruleta(individuos):
     fitness_total = float(sum(map(lambda x: x.fitness(), individuos)))
     individuos_probabilidad_individual = list(map(lambda x: x.fitness()/fitness_total,individuos))
@@ -56,6 +33,10 @@ def seleccion_por_ruleta(individuos):
             posicion_actual += 1
         individuos_seleccionados.append(individuos[posicion_actual]) 
     return individuos_seleccionados
+
+def calcular_acumulado(probabilidad_individuo, acumulado_hasta_momento):
+    nuevo_acumulado = probabilidad_individuo + acumulado_hasta_momento
+    return nuevo_acumulado
 
 def seleccion_por_torneo(individuos):
     individuos_por_torneo = max(len(individuos) / 3, 2)
