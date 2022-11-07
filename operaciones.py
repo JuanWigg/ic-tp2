@@ -15,7 +15,7 @@ def generar_individuo():
     individuo.setRandomContenedores()
     return individuo
 
-def seleccionPorRuleta(individuos):
+def seleccion_por_ruleta(individuos):
     fitness_total = float(sum(map(lambda x: x.fitness(), individuos)))
     individuos_probabilidad_individual = list(map(lambda x: x.fitness()/fitness_total,individuos))
     acumulado = 0
@@ -38,14 +38,21 @@ def calcular_acumulado(probabilidad_individuo, acumulado_hasta_momento):
     nuevo_acumulado = probabilidad_individuo + acumulado_hasta_momento
     return nuevo_acumulado
 
-def seleccionPorVentana(individuos):
+def seleccion_por_torneo(individuos):
+    individuos_por_torneo = max(len(individuos) / 3, 2)
+    individuos_seleccionados = []
+    for _ in range(len(individuos)):
+        individuos_a_competir = random.choices(individuos, k = individuos_por_torneo)
+        individuos_a_competir.sort(key=lambda x: x.fitness(), reverse=True)
+        individuos_seleccionados.append(individuos_a_competir[0]) 
+    return individuos_seleccionados
+
+def seleccion_por_ventana(individuos):
     individuos.sort(key=lambda x: x.fitness(), reverse=True)
     individuos_seleccionados = []
     for i in range(len(individuos)):
         individuos_seleccionados.append(individuos[random.randint(0,i)]) 
     return individuos_seleccionados
-
-
 
 def cruza(padre1, padre2):
     punto_corte = random.randint(1, len(padre1.contenedores)-1)
@@ -79,20 +86,15 @@ def mutacion(individuo):
     return individuo_mutado
 
 def get_2_individuos(individuos):
-    ind1 = random.choice(individuos)
-
-    ind2 = random.choice(individuos)
-
-    while(ind2==ind1):
-        ind2 = random.choice(individuos)
-
-    return ind1,ind2
+    seleccionados = random.choices(individuos, k = 2)
+    return seleccionados[0], seleccionados[1]
 
 def mutar_segun_probabilidad(individuo: Individuo, probabilidad: float):
     return mutacion(individuo) if probabilidad>random_extra() else individuo
 
-def avanzar_generacion_random(individuos: List):
-    seleccionados = seleccionPorVentana(individuos)
+
+def avanzar_generacion(individuos: List):
+    seleccionados = seleccion_por_ventana(individuos)
     
     padre1,padre2 = get_2_individuos(seleccionados)
 
