@@ -6,7 +6,7 @@ cant_mutaciones = 0
 
 def generar_poblacion(cantidad):
     individuos = []
-    for i in range(cantidad):
+    for _ in range(cantidad):
         individuos.append(generar_individuo())
     return individuos
 
@@ -15,12 +15,37 @@ def generar_individuo():
     individuo.setRandomContenedores()
     return individuo
 
+def seleccionPorRuleta(individuos):
+    fitness_total = float(sum(map(lambda x: x.fitness(), individuos)))
+    individuos_probabilidad_individual = list(map(lambda x: x.fitness()/fitness_total,individuos))
+    acumulado = 0
+    individuos_probabilidad_acumulada = []
+    
+    for i in range(len(individuos_probabilidad_individual)):
+        individuos_probabilidad_acumulada.append(calcular_acumulado(individuos_probabilidad_individual[i], acumulado))
+        acumulado = individuos_probabilidad_acumulada[i]
+    
+    individuos_seleccionados = []
+    for _ in range(len(individuos)):
+        numero_seleccionado = random_extra()
+        posicion_actual = 0
+        while individuos_probabilidad_acumulada[posicion_actual] < numero_seleccionado:
+            posicion_actual += 1
+        individuos_seleccionados.append(individuos[posicion_actual]) 
+    return individuos_seleccionados
+
+def calcular_acumulado(probabilidad_individuo, acumulado_hasta_momento):
+    nuevo_acumulado = probabilidad_individuo + acumulado_hasta_momento
+    return nuevo_acumulado
+
 def seleccionPorVentana(individuos):
     individuos.sort(key=lambda x: x.fitness(), reverse=True)
     individuos_seleccionados = []
     for i in range(len(individuos)):
         individuos_seleccionados.append(individuos[random.randint(0,i)]) 
     return individuos_seleccionados
+
+
 
 def cruza(padre1, padre2):
     punto_corte = random.randint(1, len(padre1.contenedores)-1)
