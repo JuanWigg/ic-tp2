@@ -1,17 +1,17 @@
 import random
 from random import random as random_extra
 from typing import List
+from copy import copy
 from individuo import Individuo
 cant_mutaciones = 0
 
 def ejecutar_prueba(poblacion, cantidad_pruebas, avance_generacional, probabilidad_mutacion, algoritmo_seleccion):
     resultados = []
-    for _ in range(0, cantidad_pruebas):
+    for i in range(0, cantidad_pruebas):
         contador = 1000
         poblacion_prueba = poblacion.copy()
         while((get_fittest(poblacion_prueba).fitness()<680) and (contador > 1)):
-            poblacion_prueba = avance_generacional(poblacion_prueba, probabilidad_mutacion, algoritmo_seleccion)
-            #print(f'Generacion {1001-contador}')
+            poblacion_prueba = avance_generacional(individuos=poblacion_prueba, probabilidad_mutacion=probabilidad_mutacion, funcion_seleccion=algoritmo_seleccion)
             contador -= 1
         resultados.append([1001-contador, get_fittest(poblacion_prueba), get_fittest(poblacion_prueba).fitness()])
 
@@ -45,7 +45,7 @@ def seleccion_por_ruleta(individuos):
         posicion_actual = 0
         while individuos_probabilidad_acumulada[posicion_actual] < numero_seleccionado:
             posicion_actual += 1
-        individuos_seleccionados.append(individuos[posicion_actual]) 
+        individuos_seleccionados.append(copy(individuos[posicion_actual])) 
     return individuos_seleccionados
 
 def calcular_acumulado(probabilidad_individuo, acumulado_hasta_momento):
@@ -58,14 +58,14 @@ def seleccion_por_torneo(individuos):
     for _ in range(len(individuos)):
         individuos_a_competir = random.choices(individuos, k = individuos_por_torneo)
         individuos_a_competir.sort(key=lambda x: x.fitness(), reverse=True)
-        individuos_seleccionados.append(individuos_a_competir[0]) 
+        individuos_seleccionados.append(copy(individuos_a_competir[0])) 
     return individuos_seleccionados
 
 def seleccion_por_ventana(individuos):
     individuos.sort(key=lambda x: x.fitness(), reverse=True)
     individuos_seleccionados = []
     for i in range(len(individuos)):
-        individuos_seleccionados.append(individuos[random.randint(0,i)]) 
+        individuos_seleccionados.append(copy(individuos[random.randint(0,i)])) 
     return individuos_seleccionados
 
 def cruza(padre1, padre2):
@@ -100,30 +100,63 @@ def mutacion(individuo):
     return individuo_mutado
 
 def get_2_individuos(individuos):
-    seleccionados = random.choices(individuos, k = 2)
-    return seleccionados[0], seleccionados[1]
+    ind1 = random.choice(individuos)
+
+    ind2 = random.choice(individuos)
+
+    while(ind2==ind1):
+        ind2 = random.choice(individuos)
+
+    return ind1,ind2
 
 def mutar_segun_probabilidad(individuo: Individuo, probabilidad: float):
     return mutacion(individuo) if probabilidad>random_extra() else individuo
 
-
-def avanzar_generacion(individuos: List):
-    seleccionados = seleccion_por_ventana(individuos)
+def avanzar_generacion_estacional_random(individuos: List, probabilidad_mutacion: float, funcion_seleccion: any):
+    nueva_gen = individuos.copy()
+    seleccionados = funcion_seleccion(nueva_gen)
     
     padre1,padre2 = get_2_individuos(seleccionados)
 
     hijo1,hijo2 = cruza(padre1,padre2)
 
-    hijo1 = mutar_segun_probabilidad(hijo1,0.025)
-    hijo2 = mutar_segun_probabilidad(hijo2,0.025)
+    hijo1 = mutar_segun_probabilidad(hijo1,probabilidad_mutacion)
+    hijo2 = mutar_segun_probabilidad(hijo2,probabilidad_mutacion)
 
-    areemplazar1,areemplazar2 = get_2_individuos(individuos)
+    areemplazar1,areemplazar2 = get_2_individuos(nueva_gen)
 
-    individuos.remove(areemplazar1)
-    individuos.remove(areemplazar2)
+    nueva_gen.remove(areemplazar1)
+    nueva_gen.remove(areemplazar2)
 
-    individuos.append(hijo1)
-    individuos.append(hijo2)
+    nueva_gen.append(hijo1)
+    nueva_gen.append(hijo2)
+
+    return nueva_gen
+
+def avanzar_generacion_estacional_padres_debiles(individuos: List, probabilidad_mutacion: float, funcion_seleccion: any):
+    nueva_gen = individuos.copy()
+    seleccionados = funcion_seleccion(nueva_gen)
+    
+    padre1,padre2 = get_2_individuos(seleccionados)
+
+    hijo1,hijo2 = cruza(padre1,padre2)
+
+    hijo1 = mutar_segun_probabilidad(hijo1,probabilidad_mutacion)
+    hijo2 = mutar_segun_probabilidad(hijo2,probabilidad_mutacion)
+
+    areemplazar1,areemplazar2 = get_2_peores_individuos(nueva_gen)
+
+    nueva_gen.remove(areemplazar1)
+    nueva_gen.remove(areemplazar2)
+
+    nueva_gen.append(hijo1)
+    nueva_gen.append(hijo2)
+
+    return nueva_gen
+
+def get_2_peores_individuos(individuos: List):
+    individuos.sort(key=lambda x: x.fitness())
+    return individuos[0], individuos[1]
 
 def avanzar_generacion_generacional(individuos: List, probabilidad_mutacion: float, funcion_seleccion: any):
         nueva_gen = []
