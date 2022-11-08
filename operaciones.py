@@ -4,6 +4,20 @@ from typing import List
 from individuo import Individuo
 cant_mutaciones = 0
 
+def ejecutar_prueba(poblacion, cantidad_pruebas, avance_generacional, probabilidad_mutacion, algoritmo_seleccion):
+    resultados = []
+    for _ in range(0, cantidad_pruebas):
+        contador = 1000
+        poblacion_prueba = poblacion.copy()
+        while((get_fittest(poblacion_prueba).fitness()<680) and (contador > 1)):
+            poblacion_prueba = avance_generacional(poblacion_prueba, probabilidad_mutacion, algoritmo_seleccion)
+            #print(f'Generacion {1001-contador}')
+            contador -= 1
+        resultados.append([1001-contador, get_fittest(poblacion_prueba), get_fittest(poblacion_prueba).fitness()])
+
+    return resultados
+
+
 def generar_poblacion(cantidad):
     individuos = []
     for _ in range(cantidad):
@@ -70,11 +84,11 @@ def mutar_contenedor(valor):
 
 def mutacion(individuo):
     global cant_mutaciones
-    print("Mutacion #", cant_mutaciones)
+    #print("Mutacion #", cant_mutaciones)
     cant_mutaciones += 1
     mutador = Individuo()
     mutador.setRandomContenedores()
-    print("Cromosoma de mutacion: ", mutador.contenedores)
+    #print("Cromosoma de mutacion: ", mutador.contenedores)
     contenedores_mutados = []
     for i in range(len(individuo.contenedores)):
         if mutador.contenedores[i] == 1:
@@ -113,7 +127,7 @@ def avanzar_generacion(individuos: List):
 
 def avanzar_generacion_generacional(individuos: List, probabilidad_mutacion: float, funcion_seleccion: any):
         nueva_gen = []
-        seleccionados = funcion_seleccion(individuos).copy()
+        seleccionados = funcion_seleccion(individuos)
 
         while len(seleccionados)>1:
             padre1,padre2 = get_2_individuos(seleccionados)
@@ -130,8 +144,8 @@ def avanzar_generacion_generacional(individuos: List, probabilidad_mutacion: flo
             nueva_gen.append(hijo2)
 
         if len(seleccionados)==1:
-            print("Quedo un individuo sin pareja: ", seleccionados[0])
-            print("Pasa a la siguiente generacion")
+            #print("Quedo un individuo sin pareja: ", seleccionados[0])
+            #print("Pasa a la siguiente generacion")
             nueva_gen.append(seleccionados[0])
             seleccionados.remove(seleccionados[0])
 

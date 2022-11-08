@@ -4,7 +4,7 @@ poblacion = op.generar_poblacion(4)
 print("Poblacion inicial: ")
 for individuo in poblacion:
     print(individuo)
-
+    
 print(op.avanzar_generacion_generacional(poblacion, probabilidad_mutacion=0.025, funcion_seleccion=op.seleccionPorRuleta))
 #op.seleccion_por_torneo(poblacion)
 

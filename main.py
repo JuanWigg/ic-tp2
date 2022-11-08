@@ -3,29 +3,28 @@
 from individuo import Individuo
 import operaciones as op
 
-poblacion = op.generar_poblacion(3)
-#print(poblacion)
+print("Generando población para las pruebas...")
+
+poblacion = op.generar_poblacion(10)
+
+print("Población generada: ")
+for individuo in poblacion:
+    print(individuo)
 
 
-individuo = Individuo()
-individuo.setContendores([1,0,0,0,0,0,0,0,0,0])
-individuo2 = Individuo()
-individuo2.setContendores([1,1,1,1,1,1,1,1,1,1])
-individuo3 = Individuo()
-individuo3.setContendores([1,0,1,0,0,0,0,0,0,0])
-
-individuos = []
-individuos.append(individuo2)
-individuos.append(individuo)
-individuos.append(individuo3)
-#print(op.seleccionPorVentana(individuos))
-
-#print(op.cruza(individuo, individuo2))
-
-
-print(op.mutacion(individuo2))
+pruebas_por_combinacion = 5
 
 
 
+print("Ejecutando pruebas para: Seleccion por ventana - Estacional")
+resultado_ventana_estacional = op.ejecutar_prueba(poblacion, pruebas_por_combinacion, op.avanzar_generacion_estacional, 0.025, op.seleccion_por_ventana)
 
+print("Ejecutando pruebas para: Seleccion por torneo - Estacional")
+resultado_torneo_estacional = op.ejecutar_prueba(poblacion, pruebas_por_combinacion, op.avanzar_generacion_estacional, 0.025, op.seleccion_por_torneo)
 
+print("Ejecutando pruebas para: Seleccion por ruleta - Estacional")
+resultado_ruleta_estacional = op.ejecutar_prueba(poblacion, pruebas_por_combinacion, op.avanzar_generacion_estacional, 0.025, op.seleccion_por_ruleta)
+
+print("Ejecutando pruebas para: Seleccion por ventana - Generacional")
+print("Ejecutando pruebas para: Seleccion por torneo - Generacional")
+print("Ejecutando pruebas para: Seleccion por ruleta - Generacional")
