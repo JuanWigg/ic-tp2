@@ -92,28 +92,51 @@ def get_2_individuos(individuos):
 def mutar_segun_probabilidad(individuo: Individuo, probabilidad: float):
     return mutacion(individuo) if probabilidad>random_extra() else individuo
 
-
-def avanzar_generacion(individuos: List):
-    seleccionados = seleccion_por_ventana(individuos)
+def avanzar_generacion_estacional_random(individuos: List, probabilidad_mutacion: float, funcion_seleccion: any):
+    nueva_gen = individuos.copy()
+    seleccionados = funcion_seleccion(nueva_gen)
     
     padre1,padre2 = get_2_individuos(seleccionados)
 
     hijo1,hijo2 = cruza(padre1,padre2)
 
-    hijo1 = mutar_segun_probabilidad(hijo1,0.025)
-    hijo2 = mutar_segun_probabilidad(hijo2,0.025)
+    hijo1 = mutar_segun_probabilidad(hijo1,probabilidad_mutacion)
+    hijo2 = mutar_segun_probabilidad(hijo2,probabilidad_mutacion)
 
-    areemplazar1,areemplazar2 = get_2_individuos(individuos)
+    areemplazar1,areemplazar2 = get_2_individuos(nueva_gen)
 
-    individuos.remove(areemplazar1)
-    individuos.remove(areemplazar2)
+    nueva_gen.remove(areemplazar1)
+    nueva_gen.remove(areemplazar2)
 
-    individuos.append(hijo1)
-    individuos.append(hijo2)
+    nueva_gen.append(hijo1)
+    nueva_gen.append(hijo2)
+
+def avanzar_generacion_estacional_padres_debiles(individuos: List, probabilidad_mutacion: float, funcion_seleccion: any):
+    nueva_gen = individuos.copy()
+    seleccionados = funcion_seleccion(nueva_gen)
+    
+    padre1,padre2 = get_2_individuos(seleccionados)
+
+    hijo1,hijo2 = cruza(padre1,padre2)
+
+    hijo1 = mutar_segun_probabilidad(hijo1,probabilidad_mutacion)
+    hijo2 = mutar_segun_probabilidad(hijo2,probabilidad_mutacion)
+
+    areemplazar1,areemplazar2 = get_2_peores_individuos(nueva_gen)
+
+    nueva_gen.remove(areemplazar1)
+    nueva_gen.remove(areemplazar2)
+
+    nueva_gen.append(hijo1)
+    nueva_gen.append(hijo2)
+
+def get_2_peores_individuos(individuos: List):
+    individuos.sort(key=lambda x: x.fitness())
+    return individuos[0], individuos[1]
 
 def avanzar_generacion_generacional(individuos: List, probabilidad_mutacion: float, funcion_seleccion: any):
         nueva_gen = []
-        seleccionados = funcion_seleccion(individuos).copy()
+        seleccionados = funcion_seleccion(individuos)
 
         while len(seleccionados)>1:
             padre1,padre2 = get_2_individuos(seleccionados)
