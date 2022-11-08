@@ -111,6 +111,8 @@ def avanzar_generacion_estacional_random(individuos: List, probabilidad_mutacion
     nueva_gen.append(hijo1)
     nueva_gen.append(hijo2)
 
+    return nueva_gen
+
 def avanzar_generacion_estacional_padres_debiles(individuos: List, probabilidad_mutacion: float, funcion_seleccion: any):
     nueva_gen = individuos.copy()
     seleccionados = funcion_seleccion(nueva_gen)
@@ -129,6 +131,8 @@ def avanzar_generacion_estacional_padres_debiles(individuos: List, probabilidad_
 
     nueva_gen.append(hijo1)
     nueva_gen.append(hijo2)
+
+    return nueva_gen
 
 def get_2_peores_individuos(individuos: List):
     individuos.sort(key=lambda x: x.fitness())
